@@ -6,7 +6,7 @@ This is simple node.js application with [Express.js 4.x](https://github.com/visi
 
 ```
 $ redis-server &
-$ git clone https://github.com/stoshiya/socket.io-redis-sample.git
+$ git clone https://github.com/gauravbansal74/socketIO_http-proxy_redis.git
 $ cd socket.io-redis-sample
 $ npm install
 $ PORT=3000 node app.js &

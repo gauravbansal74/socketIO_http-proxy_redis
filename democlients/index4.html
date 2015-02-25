@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+    <div id="resolution_list">
+      
+    </div>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+   <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      var socket = io("localhost:3000");
+      var apiKey = "17c8f83eb0fd48866e41c99a667355dda3e5fc23";
+
+      socket.emit('subscribe', apiKey);
+        $('form').submit(function(){
+          var msg = { 
+                apiKey : apiKey, 
+                data : $('#m').val(), 
+                res_id : $('#resolution_select').val()
+              };
+          socket.emit('publish', msg);
+          $('#m').val('');
+          return false;
+        });
+
+
+      socket.on('publish', function(msg){
+        var testdata = $.parseJSON(msg);
+        console.log(testdata['resolution_id']);
+        $('#messages').append($('<li>').text(msg));
+      });
+
+      function getResolution(){
+      var myhtml = '<select id="resolution_select">';
+        var URL = "http://localhost:3001/resolutions.json?api_key="+apiKey;
+         $.ajax({
+            type: "GET",
+            url: URL
+          })
+          .done(function(data) {
+            console.log(data);
+            for( var i =0; i < data.resolutions.length; i++){
+                var resolution = data.resolutions[i];
+                console.log(resolution.id);
+                myhtml =  myhtml+ '<option value="'+resolution.id+'">'+resolution.text+'</option>';
+            }
+            myhtml = myhtml + "</select>";
+            $("#resolution_list").html(myhtml);
+         });
+     }
+     getResolution();
+    </script>
+  </body>
+</html>
